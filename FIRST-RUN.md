@@ -9,17 +9,18 @@ git checkout v0.399.0
 git switch -c my-logging-patch
 ```
 
-Add the logging line to Dependabot's common file fetcher:
+Open `common/lib/dependabot/file_fetchers/base.rb` in your editor. Find `def initialize` and add the `puts` line directly below it:
+
+```ruby
+def initialize(source:, credentials:, repo_contents_path: nil, options: {}, update_config: nil)
+  puts "$$$$$$ hello from patch $$$$$$"
+  @source = source
+  @credentials = credentials
+```
+
+Leave the rest of the method unchanged. Save the file, then check your edit:
 
 ```bash
-python3 - <<'PY'
-from pathlib import Path
-path = Path("common/lib/dependabot/file_fetchers/base.rb")
-text = path.read_text()
-needle = "      def initialize(source:, credentials:, repo_contents_path: nil, options: {}, update_config: nil)\n"
-assert text.count(needle) == 1, "Expected initializer not found exactly once"
-path.write_text(text.replace(needle, needle + '        puts "$$$$$$ hello from patch $$$$$$"\n'))
-PY
 git diff
 ```
 
